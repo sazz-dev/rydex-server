@@ -3,6 +3,7 @@ const cors = require("cors");
 const app = express();
 const port = 3000;
 const { MongoClient, ServerApiVersion } = require("mongodb");
+require("dotenv").config();
 
 app.use(
   cors({
@@ -18,9 +19,8 @@ app.get("/", (req, res) => {
 
 // MONGO DB Connections
 
-const uri =
-  "mongodb+srv://rydexDB:457812@cluster0.j0zjic3.mongodb.net/?appName=Cluster0";
-
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.j0zjic3.mongodb.net/?appName=Cluster0`;
+ 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
