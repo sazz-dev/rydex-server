@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = 3000;
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
 app.use(
@@ -38,6 +38,7 @@ async function run() {
 
     const db = client.db("rydex_db");
     const vehiclesCollection = db.collection("vehicles");
+    const bookingsCollection = db.collection("bookings");
 
     app.get("/vehicles", async (req, res) => {
       const result = await vehiclesCollection.find().toArray(); //promise
@@ -52,6 +53,37 @@ async function run() {
         success: true,
         result,
       });
+    });
+
+    // Data Dynamic by :id
+    app.get("/vehicles/:id", async (req, res) => {
+      const { id } = req.params;
+      const objectId = new ObjectId(id);
+
+      const result = await vehiclesCollection.findOne({ _id: objectId });
+
+      res.send({
+        success: true,
+        result,
+      });
+    });
+
+    // My Vechicle Page API by Email address
+
+    app.get("/my-vehicles", async (req, res) => {
+      const email = req.query.email;
+      const result = await vehiclesCollection
+        .find({ created_by: email })
+        .toArray();
+      res.send(result);
+    });
+
+    // Booked Card data stored in db 
+
+    app.post("/my-bookings", async (req, res) => {
+      const data = req.body;
+      const result = await bookingsCollection.insertOne(data);
+      res.send(result);
     });
 
     await client.db("admin").command({ ping: 1 });
