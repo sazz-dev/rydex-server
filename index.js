@@ -7,7 +7,7 @@ require("dotenv").config();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173/"],
+    origin: ["http://localhost:5173"],
   })
 );
 
@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 // MONGO DB Connections
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.j0zjic3.mongodb.net/?appName=Cluster0`;
- 
+
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
@@ -42,7 +42,16 @@ async function run() {
     app.get("/vehicles", async (req, res) => {
       const result = await vehiclesCollection.find().toArray(); //promise
       res.send(result);
-      console.log(result);
+    });
+    // Get Data from the frontend
+    app.post("/vehicles", async (req, res) => {
+      const data = req.body;
+      const result = await vehiclesCollection.insertOne(data);
+      // Send to mongoDB
+      res.send({
+        success: true,
+        result,
+      });
     });
 
     await client.db("admin").command({ ping: 1 });
