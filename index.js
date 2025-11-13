@@ -68,6 +68,17 @@ async function run() {
       });
     });
 
+    // Latst 6 Data for homepage
+
+    app.get("/latest-vehicles", async (req, res) => {
+      const result = await vehiclesCollection
+        .find()
+        .sort({ created_at: "desc" })
+        .limit(6)
+        .toArray();
+      res.send(result);
+    });
+
     // My Vechicle Page API by Email address
 
     app.get("/my-vehicles", async (req, res) => {
@@ -95,9 +106,14 @@ async function run() {
       res.send(result);
     });
 
-
-// Search Filter
-
+    // Search Filter
+    app.get("/search", async (req, res) => {
+      const searchText = req.query.search;
+      const result = await vehiclesCollection
+        .find({ name: { $regex: searchText, $options: "i" } })
+        .toArray();
+      res.send(result);
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log(
