@@ -78,13 +78,26 @@ async function run() {
       res.send(result);
     });
 
-    // Booked Card data stored in db 
+    // Booked Card data stored in db
 
     app.post("/my-bookings", async (req, res) => {
       const data = req.body;
       const result = await bookingsCollection.insertOne(data);
       res.send(result);
     });
+
+    // Booked Api
+    app.get("/my-bookings", async (req, res) => {
+      const email = req.query.email;
+      const result = await bookingsCollection
+        .find({ booked_by: email })
+        .toArray();
+      res.send(result);
+    });
+
+
+// Search Filter
+
 
     await client.db("admin").command({ ping: 1 });
     console.log(
