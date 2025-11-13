@@ -106,6 +106,39 @@ async function run() {
       res.send(result);
     });
 
+    // Update/Edit Vehicle Data
+    app.put("/vehicles/:id", async (req, res) => {
+      const { id } = req.params;
+      const data = req.body;
+      const objectId = new ObjectId(id);
+
+      const filter = { _id: objectId };
+      const update = {
+        $set: data,
+      };
+
+      const result = await vehiclesCollection.updateOne(filter, update);
+
+      res.send({
+        success: true,
+        result,
+      });
+    });
+
+    // Delete the Vehilce data
+
+    app.delete("/vehicles/:id", async (req, res) => {
+      const { id } = req.params;
+      const objectId = new ObjectId(id);
+      const filter = { _id: objectId };
+
+      const result = await vehiclesCollection.deleteOne(filter);
+      res.send({
+        success: true,
+        result,
+      });
+    });
+
     // Search Filter
     app.get("/search", async (req, res) => {
       const searchText = req.query.search;
@@ -114,6 +147,8 @@ async function run() {
         .toArray();
       res.send(result);
     });
+
+    // All vehicle page sorts
 
     await client.db("admin").command({ ping: 1 });
     console.log(
