@@ -150,6 +150,37 @@ async function run() {
 
     // All vehicle page sorts
 
+    app.get("/category", async (req, res) => {
+      const category = req.query.category;
+      let query = {};
+      if (category) {
+        query.categories = category;
+      }
+      const result = await vehiclesCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // Sort by Price
+    app.get("/sort", async (req, res) => {
+      const sort = req.query.sort;
+
+      let sortOption = {};
+
+      // Determine sort direction
+      if (sort === "price_low") {
+        sortOption = { price: 1 }; // ascending
+      } else if (sort === "price_high") {
+        sortOption = { price: -1 }; // descending
+      }
+
+      const result = await vehiclesCollection
+        .find({})
+        .sort(sortOption)
+        .toArray();
+
+      res.send(result);
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
